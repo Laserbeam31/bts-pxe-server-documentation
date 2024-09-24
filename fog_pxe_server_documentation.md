@@ -32,13 +32,39 @@ machines (VMs) on the _SU Server_ provided by the University's computing service
 The other VM takes care of the OpenVPN tunnel connection between the main FOG container and the client router. For more
 information about these virtual machines, see the end of this document.
 
+The FOG server features a web-based administration interface. This is accessible from: 
+
+Registering a PC to the deployment server:
+------------------------------------------
+
+In order for the deployment server to be able to interface with a given computer, either for image capture or deployment,
+the computer must be _registered_ with the server. This is a process whereby the computer's MAC address and system
+hardware information is loaded into the FOG software's database.
+
+To register the PC, it should be shut down and connected to the LAN (Local Area Network) connection on the
+client Aerohive router. For more information on the Aerohive router's connectivity, see the _touring_aerohive_router_ repository.
+Next, the PC should be _PXE booted_. This involves setting the PC's BIOS to use the "onboard NIC" boot menu option. With this
+option, the PC will retrieve a minimal OS over the network from the deployment server. Note that this boot menu option
+requires the PC's BIOS to be in _legacy boot mode_.
+
+The minimal PXE OS results in a BTS-themed menu appearing on screen. The menu title clearly indicates whether the PC is
+registered to the server. Assuming that the PC is not already registered, use the computer's keyboard to select the
+"perform full host registration and inventory" option. Follow the various prompts to enter computer details; these
+are stored on the PXE server's FOG database.
+
 Capturing an image from a PC onto the deployment server:
 --------------------------------------------------------
 
-The first stage in preparing
+The first stage in preparing the "golden image" is to install Windows (or Linux) as normal onto a known-good PC.
+This OS installation is then tweaked as desired ready to be rolled out across the other PCs to be set up: any necessary
+programs are installed, colours etc. are customised, and specialist drivers may be installed. Note that, in the case of
+Windows, the "fast startup" setting must be disabled, as this prevents the capture process from being executed properly.
 
 Deploying an image from the PXE server onto a PC:
 -------------------------------------------------
+
+PXE booting basics:
+-------------------
 
 OpenVPN router-server connection details:
 -----------------------------------------
