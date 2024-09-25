@@ -127,7 +127,17 @@ In general, booting into a PXE OS involves three stages:
    DHCP stands for _Dynamic Host Configuration Protocol_ and is the process used by computers for obtaining IP
    addresses automatically from a central router.
    Notably, inside this request is included a couple of DHCP _option flag_ - identified by the numbers 66 and 67 -
-   which instruct the router that this DHCP request is 
+   which instruct the router that this DHCP request originates from a computer looking for a PXE server. The
+   router responds with an IP address for the client to use, but also includes specific responses for the option
+   flags: the IP address of the _PXE server_ and the _boot filename_ which the PC should retrieve from the server
+   to use as its boot material.
+   
+2. Once the client PC has obtained a DHCP IP address from the router, together with details of the PXE server and
+   boot filename, the computer's BIOS uses TFTP to fetch the boot file from the PXE server. TFTP
+   stands for _Trivial File Transfer Protocol_ and is preferable for low-level network booting applications
+   owing to its simplicity.
+
+3. With the boot file obtained from the server, the client PC boots this file
 
 OpenVPN router-server connection details:
 -----------------------------------------
