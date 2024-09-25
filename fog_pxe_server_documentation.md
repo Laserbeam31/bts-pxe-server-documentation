@@ -7,7 +7,7 @@ OSs installed over a network connection; this greatly facilitates OS installatio
 
 The principle behind a deployment server is that a "golden image" of a desired OS (Operating System) is installed and customized
 on one computer. Using the deployment server, this image is then _captured_ from the PC over the network connection using PXE
-Preboot Execution Environment) booting. PXE is a process whereby the PC boots into a basic temporary OS over the network and uses
+(Preboot Execution Environment) booting. PXE is a process whereby the PC boots into a basic temporary OS over the network and uses
 this to send/receive a copy of its main OS back to the deployment server. Once the captured image is stored, other computers can
 be PXE booted to the server, whereupon this image can be _deployed_ to them, also over the network. This results in the same OS
 image being installed on multiple computers, complete with any configuration tweaks. When preparing multiple computers, this
