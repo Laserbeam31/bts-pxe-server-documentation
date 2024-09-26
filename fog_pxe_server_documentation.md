@@ -195,4 +195,18 @@ The topology is as follows:
 Since both the main server and routing VMs (`bts-pxesrv-03` and `bts-pxesrv-02`, respectively) reside on the same
 physical parent server, the link between these two takes the form of a _bridge interface_. This may be thought of
 as a "virtual Ethernet cable" which runs between two VMs. Each VM has an IP address on the "end" of this "Ethernet
-cable"
+cable".
+
+The IP addresses used by each VM on the bridge interface are as follows:
+
+bts-pxesrv-03: `192.168.10.2`
+bts-pxesrv-02: '192.168.10.1'
+
+The router VM may be accessed in much the same way as the main FOG VM (see above section): The SU Server may be
+accessed over SSH  (su-srv-01.bath.ac.uk) and the following command can then be run to access a shell within the
+VM container:
+
+`sudo lxc exec bts-pxesrv-02 bash`
+
+Where `sudo` denotes administrative privileges, `lxc` refers to the container software, `bts-pxesrv-02` is the
+hostname of the virtual machine, and `bash` refers to the shell which should be opened within the VM.
