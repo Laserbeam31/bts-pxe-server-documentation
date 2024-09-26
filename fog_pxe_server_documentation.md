@@ -104,7 +104,7 @@ Once the "golden image" has been captured, it may be deployed to other computers
 machine(s) to the local network on the client router (see Aerohive details in _System Components_ section) and
 _PXE booting_ it by selecting the "onboard NIC" boot option in the computer BIOS upon power-up. The PXE boot retrieves
 a minimal menu-based "OS" over the network from the deployment server. From this menu, select the "Deploy Image" option
-and enter the FOG web interface credentials (see _System Components_ section above) when prompted. The image to be
+and enter the FOG web interface credentials (see _System components_ section above) when prompted. The image to be
 deployed may then be selected from a list. Once an image is selected, the PXE OS uses Partclone (see preceding
 section) to copy it across from the server onto the computers' local hard drive / SSD.
 
@@ -162,7 +162,37 @@ the network connectivity between the client PCs and the server VM - see the _Ope
 
 The main deployment server VM is implemented as an _LXC Container_ on the SU Server (su-srv-01.bath.ac.uk). This
 container runs Ubuntu Linux on which is installed the FOG software stack. For details of how the FOG software is
-installed, see the FOG documentation (http://docs.fogproject.org).
+installed, see the FOG documentation (http://wiki.fogproject.org).
+
+The easiest way to access the main FOG server VM is by logging into the underlying SU Server over SSH and
+executing the following command to enter a shell within the VM's LXC container:
+
+`sudo lxc exec bts-pxesrv-03 bash`
+
+Where `sudo` denotes administrative privileges, `lxc` refers to the container software, `bts-pxesrv-03` is the
+hostname of the virtual machine, and `bash` refers to the shell which should be opened within the VM.
    
 OpenVPN router-server connection details:
 -----------------------------------------
+
+The link between the client router (used as the connection point for PXE-booting client PCs; see the _System
+components_ section above) and the main FOG deployment server VM is mediated by a secondary container which
+acts as a "router" of sorts between the two. This intermediate stage is necessary because of the rather unusual
+way in which the deployment system has had to be implemented.
+
+Ordinarily, both the deployment server and the client PCs would effectively be on the same local area network (LAN),
+with pretty much unrestricted access between the two. However, in the case of this BTS deployment server, the main
+VM resides on a separate server-only network and the client Aerohive router connects to the University's _Docking_
+campus-wide network, shared with many other devices. It is therefore necessary to _tunnel_ the connection between
+the deployment server and the client router (and ultimately its connected PCs) from the server network to the
+Aerohive client router's local area network, effectively bridging the two networks as though a long Ethernet cable
+has been run between them.
+
+The topology is as follows:
+
+`Main PXE server VM (bts-pxesrv-03) ->  "Router" VM (bts-pxesrv-02) -> [Wider Uni Network] -> Client Aerohive Router -> PC(s) to be imaged`
+
+Since both the main server and routing VMs (`bts-pxesrv-03` and `bts-pxesrv-02`, respectively) reside on the same
+physical parent server, the link between these two takes the form of a _bridge interface_. This may be thought of
+as a "virtual Ethernet cable" which runs between two VMs. Each VM has an IP address on the "end" of this "Ethernet
+cable"
