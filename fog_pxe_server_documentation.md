@@ -108,6 +108,8 @@ and enter the FOG web interface credentials (see _System components_ section abo
 deployed may then be selected from a list. Once an image is selected, the PXE OS uses Partclone (see preceding
 section) to copy it across from the server onto the computers' local hard drive / SSD.
 
+When the deployment process has completed, the PC automatically reboots into its new operating system.
+
 Technical details of the PXE booting process:
 ---------------------------------------------
 
@@ -223,7 +225,55 @@ hostname of the virtual machine, and `bash` refers to the shell which should be 
 Below is an extract from the result of the `ip a` command when run from within the routing VM. This shows
 the interface configuration, as outlined above:
 
+`16535079: brlocal@if16535080: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 00:16:3e:93:88:b1 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 192.168.10.1/24 brd 192.168.10.255 scope global brlocal
+       valid_lft forever preferred_lft forever
+    inet6 fe80::216:3eff:fe93:88b1/64 scope link 
+       valid_lft forever preferred_lft forever
+16535083: eth1@if16535084: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 00:16:3e:37:76:3d brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 138.38.11.59/26 brd 138.38.11.63 scope global eth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::216:3eff:fe37:763d/64 scope link 
+       valid_lft forever preferred_lft forever`
 
+As discussed above, the _Aerohive Router_ provides a local connection point for client PCs to PXE boot. This Aerohive router is explained
+further in its own documentation, as it is also used to provide routing facilities to small event networks in other Backstage contexts
+aside from PXE deployment. This router runs the open-source _OpenWRT_ firmware, allowing it to provide relatively advanced networking
+capabilities given its smalll size and cost. It has a _WAN_ (wide area netwwork) port for connecting to the University's wired Docking
+network and a _LAN_ (local area network) for connecting to local devices (PCs / video encoders etc.) requiring external connectivity of
+some kind. Crucially, this router "masquerades" any of its local devices, appearing to the external Docking network as only one single
+connection.
 
-The final component in the server-client connection topology is the _OpenVPN Tunnel_ between the routing VM
-and the PC-side client Aerohive router.
+The IP address range for devices connected to the LAN side of the Aerohive router is: `10.10.150.xxx`
+
+The router has the address of `10.10.150.254` on its own LAN interface.
+
+Configuration of the Aerohive router can be done by connecting to its web interface at http://10.10.150.254 from a device on the LAN network.
+Alternatively, a connection can be made over SSH to configure it via its regular Linux bash terminal. The latter method is recommended
+for OpenVPN configuration (see below).
+
+The final component in the server-client connection topology is the _OpenVPN Tunnel_ between the routing VM and the PC-side
+client Aerohive router. This is implemented in the form of an OpenVPN _server_ on the routing VM (`bts-pxesrv-02`) and an OpenVPN
+_client_ on the Aerohive router to which the client PCs connect. These two OpenVPN instances form the encrypted tunnel from the
+main server VM (`bts-pxesrv-03`) to the client PC(s). Encryption is achieved by the use of a randomly-generated OpenVPN _pre-shared_
+key.
+
+Configuration files for both the client and server OpenVPN instances are stored in the `/etc/openvpn` folder on the Aerohive router and
+`bts-pxesrv-02` routing VM respectively.
+
+At both ends of the connection, firewall rules are in place to allow traffic from the OpenVPN tunnel to reach the bridge network at the
+server side and the Aerohive router LAN network at the client PC side.
+
+Below is an extract from the result of the `sudo lxc list` command when run on the underlying host server. This shows the IP addresses 
+present on each VM. The `tun0` IP address on the routing VM (`bts-pxesrv-02`) corresponds to the OpenVPN tunnel over to the client Aerohive
+router (see below):
+
+`+----------------------+---------+---------------------------+------+-----------------+-----------+
+| bts-pxesrv-02        | RUNNING | 192.168.101.1 (tun0)      |      | CONTAINER       | 0         |
+|                      |         | 192.168.10.1 (brlocal)    |      |                 |           |
+|                      |         | 138.38.11.59 (eth1)       |      |                 |           |
++----------------------+---------+---------------------------+------+-----------------+-----------+
+| bts-pxesrv-03        | RUNNING | 192.168.10.2 (brlocal)    |      | CONTAINER       | 0         |
++----------------------+---------+---------------------------+------+-----------------+-----------+`
