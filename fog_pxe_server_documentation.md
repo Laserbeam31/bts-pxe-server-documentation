@@ -202,11 +202,28 @@ The IP addresses used by each VM on the bridge interface are as follows:
 bts-pxesrv-03: `192.168.10.2`
 bts-pxesrv-02: '192.168.10.1'
 
-The router VM may be accessed in much the same way as the main FOG VM (see above section): The SU Server may be
-accessed over SSH  (su-srv-01.bath.ac.uk) and the following command can then be run to access a shell within the
-VM container:
+In addition to its above bridge IP address, the router VM, `bts-pxesrv-02`, has an IP address on a separate
+interface connecting out to a campus-accessible `138.38.11.xxx` network:
+
+bts-pxesrv-02: `138.38.11.59`
+
+An IPTables _NAT_ rule is in place to allow the bridge network to access the wider campus network through this
+connection. Functionally, this is what allows the main deployment server VM to access / be accessed by an
+external connection from the wired campus Docking network.
+
+The router VM may be accessed in much the same way as the main FOG VM (see above section): The underlying SU Server
+machine may be accessed over SSH  (su-srv-01.bath.ac.uk) and the following command can then be run to access a shell
+within the VM container:
 
 `sudo lxc exec bts-pxesrv-02 bash`
 
 Where `sudo` denotes administrative privileges, `lxc` refers to the container software, `bts-pxesrv-02` is the
 hostname of the virtual machine, and `bash` refers to the shell which should be opened within the VM.
+
+Below is an extract from the result of the `ip a` command when run from within the routing VM. This shows
+the interface configuration, as outlined above:
+
+
+
+The final component in the server-client connection topology is the _OpenVPN Tunnel_ between the routing VM
+and the PC-side client Aerohive router.
