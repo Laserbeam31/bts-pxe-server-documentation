@@ -108,8 +108,8 @@ and enter the FOG web interface credentials (see _System Components_ section abo
 deployed may then be selected from a list. Once an image is selected, the PXE OS uses Partclone (see preceding
 section) to copy it across from the server onto the computers' local hard drive / SSD.
 
-PXE booting basics:
--------------------
+Technical details of the PXE booting process:
+---------------------------------------------
 
 PXE stands for _Preboot Execution Environment_ and is a method by which a computer can boot into an operating system
 _over a network connection_ rather than from a local disk or memory stick. It is noteworthy that this requires
@@ -137,7 +137,32 @@ In general, booting into a PXE OS involves three stages:
    stands for _Trivial File Transfer Protocol_ and is preferable for low-level network booting applications
    owing to its simplicity.
 
-3. With the boot file obtained from the server, the client PC boots this file
+3. The TFTP-fetched boot file is used to boot into the minimal PXE "OS" known as a _Network Bootstrap Program_,
+   or NBP. The NBP is responsible for creating a menu screen from which various actions may be selected by the user.
+   Upon selection of a certain menu entry, the NBP then uses TFTP to fetch a separate operating system kernel
+   corresponding to this option. The NBP may therefore be considered to act as a "handover" stage between the
+   computer's own BIOS and a standalone operating system kernel.
 
+In the specific instance of the BTS FOG deployment server, the FOG menu presented to client PCs upon a PXE boot
+is that of the NBP. Partclone, the software used to clone an operating system onto the computer's physical disk,
+represents the separate kernel loaded by the NBP.
+
+Other than Partclone, FOG's NBP may be configured to boot into many different types of "bootable" live images;
+this includes "live" Linux distributions which can run a full desktop environment without interfering with the
+computer's local disk.
+
+Technical details of the FOG deployment server VM:
+--------------------------------------------------
+
+As mentioned in the _System Components_ section of this document, the main deployment server consists of two
+virtual machines on the DDaT-provided SU Linux machine in a University server room. To access this machine,
+please contact the BTS committee (committee@bts-crew.com). This section focuses on the first virtual machine - that
+which runs the main deployment server software. For details on the second virtual machine - that which mediates
+the network connectivity between the client PCs and the server VM - see the _OpenVPN_ section below.
+
+The main deployment server VM is implemented as an _LXC Container_ on the SU Server (su-srv-01.bath.ac.uk). This
+container runs Ubuntu Linux on which is installed the FOG software stack. For details of how the FOG software is
+installed, see the FOG documentation (http://docs.fogproject.org).
+   
 OpenVPN router-server connection details:
 -----------------------------------------
