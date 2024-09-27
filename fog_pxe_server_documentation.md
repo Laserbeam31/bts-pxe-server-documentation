@@ -269,11 +269,12 @@ server side and the Aerohive router LAN network at the client PC side.
 Below is an extract from the result of the `sudo lxc list` command when run on the underlying host server. This shows the IP addresses 
 present on each VM. The `tun0` IP address on the routing VM (`bts-pxesrv-02`) corresponds to the OpenVPN tunnel over to the client Aerohive
 router (see below):
-
-`+----------------------+---------+---------------------------+------+-----------------+-----------+
+```
++----------------------+---------+---------------------------+------+-----------------+-----------+
 | bts-pxesrv-02        | RUNNING | 192.168.101.1 (tun0)      |      | CONTAINER       | 0         |
 |                      |         | 192.168.10.1 (brlocal)    |      |                 |           |
 |                      |         | 138.38.11.59 (eth1)       |      |                 |           |
 +----------------------+---------+---------------------------+------+-----------------+-----------+
 | bts-pxesrv-03        | RUNNING | 192.168.10.2 (brlocal)    |      | CONTAINER       | 0         |
-+----------------------+---------+---------------------------+------+-----------------+-----------+`
++----------------------+---------+---------------------------+------+-----------------+-----------+
+```
