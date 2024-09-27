@@ -225,7 +225,7 @@ hostname of the virtual machine, and `bash` refers to the shell which should be 
 Below is an extract from the result of the `ip a` command when run from within the routing VM. This shows
 the interface configuration, as outlined above:
 
-`16535079: brlocal@if16535080: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+```16535079: brlocal@if16535080: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
     link/ether 00:16:3e:93:88:b1 brd ff:ff:ff:ff:ff:ff link-netnsid 0
     inet 192.168.10.1/24 brd 192.168.10.255 scope global brlocal
        valid_lft forever preferred_lft forever
@@ -236,7 +236,7 @@ the interface configuration, as outlined above:
     inet 138.38.11.59/26 brd 138.38.11.63 scope global eth1
        valid_lft forever preferred_lft forever
     inet6 fe80::216:3eff:fe37:763d/64 scope link 
-       valid_lft forever preferred_lft forever`
+       valid_lft forever preferred_lft forever```
 
 As discussed above, the _Aerohive Router_ provides a local connection point for client PCs to PXE boot. This Aerohive router is explained
 further in its own documentation, as it is also used to provide routing facilities to small event networks in other Backstage contexts
